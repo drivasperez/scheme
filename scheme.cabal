@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 242005b557fe4d111727a48e93317a8a80b70e2bf1d8cee0a018548c8d95acad
+-- hash: 5c735289710c67d5a00c67923c0eed958b80e7e60b4adef7d2e27e8d640bff04
 
 name:           scheme
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Evaluator
       Lib
       Parser
       Types
