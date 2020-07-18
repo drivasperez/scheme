@@ -33,9 +33,9 @@ primitives = [
              ]
 
 testType :: LispVal -> [LispVal] -> ThrowsError LispVal
-testType lv [] = return $ Bool False
-testType lv vals = return x 
-  where x = case (lv, head vals) of
+testType lv [] = throwError $ NumArgs 1 []
+testType lv [t] = return x 
+  where x = case (lv, t) of
               (Atom _, Atom _)                 -> Bool True
               (List _, List _)                 -> Bool True
               (DottedList _ _, DottedList _ _) -> Bool True
@@ -43,6 +43,7 @@ testType lv vals = return x
               (String _, String _)             -> Bool True
               (Bool _, Bool _)                 -> Bool True
               (_, _)                           -> Bool False
+testType lv multiVal@_ = throwError $ NumArgs 1 multiVal
 
 numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> ThrowsError LispVal
 numericBinop op []            = throwError $ NumArgs 2 []
