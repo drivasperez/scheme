@@ -61,3 +61,7 @@ trapError action = catchError action (return . show)
 
 extractValue :: ThrowsError a -> a
 extractValue (Right val) = val
+
+-- LispFunc --
+
+type LispFunc = [LispVal] -> ThrowsError LispVal
