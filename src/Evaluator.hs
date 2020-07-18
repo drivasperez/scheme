@@ -43,12 +43,14 @@ primitives = [
              ,("string>?", strBoolBinop (>))
              ,("string<=?", strBoolBinop (<=))
              ,("string>=?", strBoolBinop (>=))
+             ,("car", car)
              ,("list?", testType $ List [])
              ,("dottedlist?", testType $ DottedList [] $ Bool True)
              ,("number?", testType $ Number 0)
              ,("string?", testType $ String "")
              ,("bool?", testType $ Bool True)
              ]
+
 
 boolBinop :: (LispVal -> ThrowsError a) -> (a -> a -> Bool) -> [LispVal] -> ThrowsError LispVal
 boolBinop unpacker op args = if length args /= 2
@@ -73,6 +75,12 @@ testType lv [t] = return x
               (Bool _, Bool _)                 -> Bool True
               (_, _)                           -> Bool False
 testType lv multiVal@_ = throwError $ NumArgs 1 multiVal
+
+car :: [LispVal] -> ThrowsError LispVal
+car [List (x:xs)]         = return x
+car [DottedList (x:xs) _] = return x
+car [badArg]              = throwError $ TypeMismatch "pair" badArg
+car badArgList            = throwError $ NumArgs 1 badArgList
 
 numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> ThrowsError LispVal
 numericBinop op []            = throwError $ NumArgs 2 []
