@@ -62,6 +62,18 @@ trapError action = catchError action (return . show)
 extractValue :: ThrowsError a -> a
 extractValue (Right val) = val
 
+-- IOThrowsError --
+
+type IOThrowsError = ExceptT LispError IO
+
+liftThrows :: MonadError e m => Either e a -> m a
+liftThrows (Left err) = throwError err
+liftThrows (Right val) = return val
+
+runIOThrows :: IOThrowsError String -> IO String
+runIOThrows action = runExceptT (trapError action) >>= return . extractValue
+
 -- LispFunc --
 
 type LispFunc = [LispVal] -> ThrowsError LispVal
+
