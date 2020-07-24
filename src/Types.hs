@@ -2,6 +2,7 @@ module Types where
 
 import Text.ParserCombinators.Parsec (ParseError)
 import Control.Monad.Except
+import Data.IORef
 
 unwordsList :: [LispVal] -> String
 unwordsList = unwords . map showVal
@@ -15,6 +16,9 @@ data LispVal = Atom String
   | Number Integer
   | String String
   | Bool Bool
+  | PrimitiveFunc LispFunc
+  | Func { params :: [String], vararg :: (Maybe String),
+           body :: [LispVal], closure :: Env }
 
 
 showVal :: LispVal -> String
@@ -25,6 +29,12 @@ showVal (Bool True) = "#t"
 showVal (Bool False) = "#f"
 showVal (List elems) = "(" ++ unwordsList elems ++ ")"
 showVal (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ showVal tail ++ ")"
+showVal (PrimitiveFunc _) = "<primitive>"
+showVal (Func {params = args, vararg = varargs, body = body, closure = env}) =
+  "(lambda (" ++ unwords (map show args) ++
+    (case varargs of
+       Nothing -> ""
+       Just arg -> " . " ++ arg) ++ ") ...)"
 
 instance Show LispVal where show = showVal
 
@@ -77,3 +87,6 @@ runIOThrows action = runExceptT (trapError action) >>= return . extractValue
 
 type LispFunc = [LispVal] -> ThrowsError LispVal
 
+-- Env --
+
+type Env = IORef [(String, IORef LispVal)]
